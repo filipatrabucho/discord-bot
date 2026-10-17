@@ -27,4 +27,13 @@ registerEvents(client);
 
 process.on('unhandledRejection', (error) => console.error('[unhandledRejection]', error));
 
-await client.login(config.token);
+try {
+  await client.login(config.token);
+} catch (error) {
+  const hints = {
+    TokenInvalid: 'DISCORD_TOKEN is wrong. Use Developer Portal → Bot → Reset Token (not the OAuth2 Client Secret), no quotes or spaces.',
+    DisallowedIntents: 'Enable "Server Members Intent" and "Message Content Intent" in Developer Portal → Bot → Privileged Gateway Intents.',
+  };
+  console.error(`❌ ${hints[error.code] ?? error.message}`);
+  process.exit(1);
+}
