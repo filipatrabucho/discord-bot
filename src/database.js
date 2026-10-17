@@ -112,7 +112,8 @@ const DEFAULT_SETTINGS = {
   welcome: { enabled: true, message: null, image: null, dm: false, goodbyeEnabled: true, goodbyeMessage: null },
   // rules: custom rules text (null = default rules)
   // mode: 'button' = the bot's own pop-up; 'discord' = Discord's native rules screening, Member role given once accepted.
-  verification: { enabled: false, mode: 'button', minAccountAgeDays: 0, rules: null },
+  // kickAfterMinutes: in 'discord' mode, kick members who haven't accepted the rules after this long (0 = never).
+  verification: { enabled: false, mode: 'button', minAccountAgeDays: 0, rules: null, kickAfterMinutes: 0 },
   tickets: { counter: 0 },
   levels: { enabled: true },
   music: { restrictToChannel: true },

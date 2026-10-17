@@ -51,6 +51,7 @@ export function registerEvents(client) {
     const tick = () => {
       checkExpired(client).catch((e) => console.warn('[premium]', e.message));
       checkEnded(client).catch((e) => console.warn('[giveaways]', e.message));
+      verification.kickUnaccepted(client).catch((e) => console.warn('[verification]', e.message));
     };
     tick();
     setInterval(tick, 30_000);

@@ -13,7 +13,9 @@ export const data = describe(new SlashCommandBuilder().setName('onboarding'), 'o
   .setDMPermission(false)
   .addSubcommand((s) => describe(s.setName('setup'), 'onboarding.setup'))
   .addSubcommand((s) => describe(s.setName('rules'), 'onboarding.rules'))
-  .addSubcommand((s) => describe(s.setName('welcome-screen'), 'onboarding.welcomeScreen'))
+  .addSubcommand((s) =>
+    describe(s.setName('welcome-screen'), 'onboarding.welcomeScreen').addBooleanOption((o) => describe(o.setName('enabled'), 'onboarding.welcomeScreenEnabled')),
+  )
   .addSubcommand((s) => describe(s.setName('status'), 'onboarding.status'));
 
 export async function execute(interaction) {
@@ -27,6 +29,11 @@ export async function execute(interaction) {
 
   if (interaction.options.getSubcommand() === 'welcome-screen') {
     await interaction.deferReply({ flags: ephemeral });
+    // Turned off, new members go straight to Discord's rules pop-up (no "just looking around" option).
+    if (interaction.options.getBoolean('enabled') === false) {
+      await guild.editWelcomeScreen({ enabled: false });
+      return interaction.editReply({ embeds: [embed('success').setDescription(t(lang, 'welcomeScreen.disabled'))] });
+    }
     try {
       const used = await applyWelcomeScreen(guild, lang);
       const onboardingOn = (await guild.fetchOnboarding().catch(() => null))?.enabled;

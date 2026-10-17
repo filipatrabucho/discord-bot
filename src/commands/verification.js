@@ -26,6 +26,11 @@ export const data = describe(new SlashCommandBuilder().setName('verification'), 
     ),
   )
   .addSubcommand((s) =>
+    describe(s.setName('kick-unaccepted'), 'verification.kickUnaccepted').addIntegerOption((o) =>
+      describe(o.setName('minutes'), 'verification.minutes').setRequired(true).setMinValue(0).setMaxValue(10080),
+    ),
+  )
+  .addSubcommand((s) =>
     describe(s.setName('toggle'), 'verification.toggle').addBooleanOption((o) => describe(o.setName('enabled'), 'verification.enabled').setRequired(true)),
   );
 
@@ -55,6 +60,11 @@ export async function execute(interaction) {
     const days = interaction.options.getInteger('days');
     updateSettings(guild.id, { verification: { minAccountAgeDays: days } });
     return success(interaction, t(lang, 'verification.ageSet', { days }));
+  }
+  if (sub === 'kick-unaccepted') {
+    const minutes = interaction.options.getInteger('minutes');
+    updateSettings(guild.id, { verification: { kickAfterMinutes: minutes } });
+    return success(interaction, t(lang, minutes ? 'verification.kickSet' : 'verification.kickOff', { minutes }));
   }
   if (sub === 'toggle') {
     const enabled = interaction.options.getBoolean('enabled');

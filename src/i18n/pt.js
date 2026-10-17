@@ -192,6 +192,8 @@ export default {
     already: 'Já estás verificado.',
     notConfigured: 'A verificação ainda não está configurada. Um admin tem de usar `/setup` ou `/verification panel role:`.',
     accountTooNew: 'A tua conta do Discord é demasiado recente. As contas têm de ter pelo menos **{days}** dias para entrar.',
+    kickedDm: "Foste removido do **{server}** porque não aceitaste as regras em {minutes} minutos. Podes voltar a entrar quando quiseres e aceitar as regras.",
+    logKicked: "👢 {user} foi expulso por não aceitar as regras em {minutes} minutos.",
     logVerified: '✅ {user} aceitou as regras e foi verificado.',
   },
 
@@ -430,6 +432,8 @@ export default {
     panelSent: 'Painel de verificação enviado para {channel}. Os novos membros têm de aceitar as regras para ver o servidor.',
     rulesSent: 'Regras enviadas para {channel}.',
     ageSet: 'Idade mínima da conta: **{days}** dia(s).',
+    kickSet: "Quem não aceitar as regras em **{minutes} minutos** é expulso automaticamente.",
+    kickOff: "Expulsão automática desligada.",
     toggled: 'A verificação está agora **{state}**. (Desligada, os novos membros recebem o cargo Membro automaticamente.)',
   },
 
@@ -466,6 +470,7 @@ export default {
       announcements: 'Novidades do servidor',
     },
     done: '✅ O Ecrã de boas-vindas do Discord ficou preenchido com: {channels}\nVê-o em **Definições do servidor → Ecrã de boas-vindas** (Pré-visualizar).',
+    disabled: "✅ Ecrã de boas-vindas desligado. Quem entra vai diretamente para o popup das regras (sem a opção \"Estou só a dar uma olhada\").",
     onboardingNote: '⚠️ A Integração (Onboarding) do Discord também está ativa, e substitui o Ecrã de boas-vindas para os novos membros. Para mostrar o Ecrã de boas-vindas, desativa a Integração em **Definições do servidor → Integração**.',
     failed: 'O Discord recusou o Ecrã de boas-vindas: `{error}`',
   },
@@ -572,6 +577,8 @@ export default {
       rulesText: 'Regras personalizadas (usa \\n para mudar de linha). Vazio = regras padrão',
       accountAge: 'Idade mínima da conta do Discord para verificar (anti-raid)',
       days: 'Dias (0 = desligado)',
+      kickUnaccepted: "Expulsa quem não aceitar as regras em X minutos (0 = desligado)",
+      minutes: "Minutos (0 = desligado)",
       toggle: 'Liga ou desliga a verificação à entrada',
       enabled: 'Ligado ou desligado',
     },
@@ -580,6 +587,7 @@ export default {
       setup: 'Cria as perguntas do onboarding a partir da configuração do bot',
       rules: 'Ativa o popup do próprio Discord para aceitar as regras ao entrar',
       welcomeScreen: 'Preenche o Ecrã de boas-vindas do Discord com os canais principais',
+      welcomeScreenEnabled: "Ligar ou desligar o Ecrã de boas-vindas (padrão: ligar)",
       status: 'Mostra o onboarding atual',
     },
     invites: {

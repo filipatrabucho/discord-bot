@@ -120,3 +120,21 @@ export async function onScreeningPassed(before, after) {
   await after.roles.add(role, 'Accepted the server rules');
   await sendLog(after.guild, embed('success').setDescription(t(langOf(after.guild), 'verify.logVerified', { user: `<@${after.id}>` })));
 }
+
+/** "Accept or leave": kicks members who still haven't accepted Discord's rules pop-up after the configured time. */
+export async function kickUnaccepted(client) {
+  for (const guild of client.guilds.cache.values()) {
+    const { verification } = getSettings(guild.id);
+    if (!verification.enabled || verification.mode !== 'discord' || !verification.kickAfterMinutes) continue;
+    const limit = Date.now() - verification.kickAfterMinutes * 60_000;
+    const lang = langOf(guild);
+    for (const member of guild.members.cache.values()) {
+      if (!member.pending || member.user.bot || !member.joinedTimestamp || member.joinedTimestamp > limit || !member.kickable) continue;
+      await member
+        .send({ embeds: [embed('warning').setDescription(t(lang, 'verify.kickedDm', { server: guild.name, minutes: verification.kickAfterMinutes }))] })
+        .catch(() => {});
+      await member.kick('Did not accept the rules in time').catch(() => {});
+      await sendLog(guild, embed('warning').setDescription(t(lang, 'verify.logKicked', { user: `<@${member.id}>`, minutes: verification.kickAfterMinutes })));
+    }
+  }
+}

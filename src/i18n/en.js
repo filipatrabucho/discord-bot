@@ -192,6 +192,8 @@ export default {
     already: 'You are already verified.',
     notConfigured: 'Verification is not set up yet. An admin needs to run `/setup` or `/verification panel role:`.',
     accountTooNew: 'Your Discord account is too new. Accounts must be at least **{days}** days old to join.',
+    kickedDm: "You were removed from **{server}** because you didn't accept the rules within {minutes} minutes. You can join again anytime and accept them.",
+    logKicked: "👢 {user} was kicked for not accepting the rules within {minutes} minutes.",
     logVerified: '✅ {user} accepted the rules and was verified.',
   },
 
@@ -430,6 +432,8 @@ export default {
     panelSent: 'Verification panel sent to {channel}. New members must accept the rules to see the server.',
     rulesSent: 'Rules sent to {channel}.',
     ageSet: 'Minimum account age: **{days}** day(s).',
+    kickSet: "Members who don't accept the rules within **{minutes} minutes** are kicked automatically.",
+    kickOff: "Automatic kick turned off.",
     toggled: 'Verification is now **{state}**. (When off, new members get the Member role automatically.)',
   },
 
@@ -466,6 +470,7 @@ export default {
       announcements: 'Server news',
     },
     done: "✅ Discord's Welcome Screen is filled in with: {channels}\nSee it in **Server Settings → Welcome Screen** (Preview).",
+    disabled: "✅ Welcome Screen turned off. New members go straight to the rules pop-up (no \"just looking around\" option).",
     onboardingNote: "⚠️ Discord's Onboarding is also on, and it replaces the Welcome Screen for new members. To show the Welcome Screen, turn off Onboarding in **Server Settings → Onboarding**.",
     failed: 'Discord refused the Welcome Screen: `{error}`',
   },
@@ -572,6 +577,8 @@ export default {
       rulesText: 'Custom rules (use \\n for new lines). Empty = default rules',
       accountAge: 'Minimum Discord account age to verify (anti-raid)',
       days: 'Days (0 = disabled)',
+      kickUnaccepted: "Kick members who don't accept the rules within X minutes (0 = off)",
+      minutes: "Minutes (0 = off)",
       toggle: 'Turn the verification gate on or off',
       enabled: 'On or off',
     },
@@ -580,6 +587,7 @@ export default {
       setup: 'Create the onboarding questions from the bot setup',
       rules: "Turn on Discord's own 'accept the rules' pop-up for new members",
       welcomeScreen: "Fill in Discord's Welcome Screen with the server's main channels",
+      welcomeScreenEnabled: "Turn the Welcome Screen on or off (default: on)",
       status: 'Show the current onboarding',
     },
     invites: {
