@@ -198,11 +198,13 @@ export default {
     title: 'Bem-vindo, {username}!',
     defaultMessage:
       'Olá {user}, bem-vindo ao **{server}**! 🎉\nÉs o membro **#{count}**.\n\nLê as regras, verifica-te e escolhe os teus cargos para começar.',
+    defaultMessageVerify:
+      'Olá {user}, bem-vindo ao **{server}**! 🎉\nÉs o membro **#{count}**.\n\n👇 Clica em **Aceitar as regras** aqui em baixo para as leres e desbloquear o servidor.',
     defaultGoodbye: '**{username}** saiu do servidor. Agora somos **{count}** membros.',
     footer: 'Membros: {count}',
     invitedBy: 'Convidado por',
     rulesButton: 'Regras',
-    verifyButton: 'Verificar',
+    verifyButton: 'Aceitar as regras',
     rolesButton: 'Cargos',
     channelSet: 'As mensagens de boas-vindas vão ser enviadas para {channel}.',
     modalTitle: 'Mensagem de boas-vindas',

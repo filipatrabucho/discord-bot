@@ -29,7 +29,10 @@ export function buildWelcome(member, inviteInfo = null) {
   const { guild } = member;
   const settings = getSettings(guild.id);
   const lang = langOf(guild);
-  const text = settings.welcome.message ?? t(lang, 'welcome.defaultMessage');
+  // New members who still have to accept the rules get the button right on the welcome card.
+  const memberRole = settings.verification.enabled && guild.roles.cache.get(settings.roles.member);
+  const needsVerify = Boolean(memberRole && !member.roles.cache.has(memberRole.id));
+  const text = settings.welcome.message ?? t(lang, needsVerify ? 'welcome.defaultMessageVerify' : 'welcome.defaultMessage');
 
   const e = embed('primary')
     .setAuthor({ name: guild.name, iconURL: guild.iconURL() ?? undefined })
@@ -42,9 +45,10 @@ export function buildWelcome(member, inviteInfo = null) {
   if (inviteInfo) e.addFields({ name: t(lang, 'welcome.invitedBy'), value: fillPlaceholders('{inviter} ({invites})', member, lang, inviteInfo) });
 
   const buttons = [];
-  const { rules, verify, selfRoles } = settings.channels;
+  const { rules, selfRoles } = settings.channels;
+  // Opens the same rules pop-up as the #verify panel (handled by the verify module).
+  if (needsVerify) buttons.push(new ButtonBuilder().setCustomId('verify:start').setStyle(ButtonStyle.Success).setLabel(t(lang, 'welcome.verifyButton')).setEmoji('✅'));
   if (rules) buttons.push(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(t(lang, 'welcome.rulesButton')).setEmoji('📜').setURL(channelLink(guild, rules)));
-  if (verify && settings.verification.enabled) buttons.push(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(t(lang, 'welcome.verifyButton')).setEmoji('✅').setURL(channelLink(guild, verify)));
   if (selfRoles) buttons.push(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(t(lang, 'welcome.rolesButton')).setEmoji('🎭').setURL(channelLink(guild, selfRoles)));
 
   return { content: `<@${member.id}>`, embeds: [e], components: buttons.length ? [new ActionRowBuilder().addComponents(buttons)] : [] };

@@ -198,11 +198,13 @@ export default {
     title: 'Welcome, {username}!',
     defaultMessage:
       'Hey {user}, welcome to **{server}**! 🎉\nYou are member **#{count}**.\n\nRead the rules, verify yourself and pick your roles to get started.',
+    defaultMessageVerify:
+      'Hey {user}, welcome to **{server}**! 🎉\nYou are member **#{count}**.\n\n👇 Click **Accept the rules** below to read them and unlock the server.',
     defaultGoodbye: '**{username}** left the server. We are now **{count}** members.',
     footer: 'Members: {count}',
     invitedBy: 'Invited by',
     rulesButton: 'Rules',
-    verifyButton: 'Verify',
+    verifyButton: 'Accept the rules',
     rolesButton: 'Roles',
     channelSet: 'Welcome messages will be sent to {channel}.',
     modalTitle: 'Welcome message',
