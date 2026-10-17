@@ -126,7 +126,7 @@ export default {
       welcome: 'Everyone who joins is welcomed here.',
       rules: 'Read the rules before chatting.',
       announcements: 'Official server news.',
-      verify: 'Click the button to accept the rules and unlock the server.',
+      verify: 'Click the button, read the rules and accept them to unlock the server.',
       selfRoles: 'Pick your roles with the buttons.',
       general: 'Talk about anything.',
       media: 'Share pictures and videos.',
@@ -178,15 +178,15 @@ export default {
   },
 
   verify: {
-    word: 'I agree',
     panelTitle: '✅ Verification',
     panelDescription:
-      'Welcome to **{server}**!\n\nTo unlock the server, read the rules and click the button below. A pop-up will ask you to type **{word}** to confirm you accept them.',
-    button: 'Accept the rules',
-    modalTitle: 'Accept the rules',
-    confirmLabel: 'Type "{word}" to accept the rules',
+      'Welcome to **{server}**!\n\nClick the button below: a pop-up will show you the rules. Tick **I accept the rules** to unlock the whole server.',
+    button: 'Read and accept the rules',
+    modalTitle: 'Welcome to {server}',
+    acceptLabel: 'I accept the rules',
+    acceptDescription: 'Required to enter the server',
+    mustAccept: 'You have to tick **I accept the rules** to enter. Click the button again whenever you are ready.',
     sourceLabel: 'How did you find us? (optional)',
-    wrongWord: 'That is not right. Type exactly **{word}**.',
     success: '🎉 You are verified! Welcome to **{server}** — all channels are now unlocked.',
     already: 'You are already verified.',
     notConfigured: 'Verification is not set up yet. An admin needs to run `/setup` or `/verification panel role:`.',
@@ -270,7 +270,6 @@ export default {
     claimed: '🙋 {user} is handling this ticket.',
     notATicket: 'This is not an open ticket channel.',
     noPermission: 'Only the ticket owner or staff can close it.',
-    transcriptDm: 'Your ticket in **{server}** was closed. Here is the transcript:',
     logOpened: '🎫 Ticket #{number} opened by {user}: {channel}',
   },
 

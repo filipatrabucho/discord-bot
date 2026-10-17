@@ -126,7 +126,7 @@ export default {
       welcome: 'Toda a gente que entra é recebida aqui.',
       rules: 'Lê as regras antes de falar.',
       announcements: 'Notícias oficiais do servidor.',
-      verify: 'Clica no botão para aceitar as regras e desbloquear o servidor.',
+      verify: 'Clica no botão, lê as regras e aceita-as para desbloquear o servidor.',
       selfRoles: 'Escolhe os teus cargos com os botões.',
       general: 'Fala sobre qualquer coisa.',
       media: 'Partilha fotos e vídeos.',
@@ -178,15 +178,15 @@ export default {
   },
 
   verify: {
-    word: 'aceito',
     panelTitle: '✅ Verificação',
     panelDescription:
-      'Bem-vindo ao **{server}**!\n\nPara desbloquear o servidor, lê as regras e clica no botão abaixo. Vai aparecer um popup a pedir para escreveres **{word}** para confirmar que as aceitas.',
-    button: 'Aceitar as regras',
-    modalTitle: 'Aceitar as regras',
-    confirmLabel: 'Escreve "{word}" para aceitar as regras',
+      'Bem-vindo ao **{server}**!\n\nClica no botão abaixo: vai abrir um popup com as regras. Marca **Aceito as regras** para desbloquear o servidor todo.',
+    button: 'Ler e aceitar as regras',
+    modalTitle: 'Bem-vindo ao {server}',
+    acceptLabel: 'Aceito as regras',
+    acceptDescription: 'Obrigatório para entrar no servidor',
+    mustAccept: 'Tens de marcar **Aceito as regras** para entrar. Clica outra vez no botão quando estiveres pronto.',
     sourceLabel: 'Como nos encontraste? (opcional)',
-    wrongWord: 'Não está certo. Escreve exatamente **{word}**.',
     success: '🎉 Estás verificado! Bem-vindo ao **{server}** — todos os canais estão desbloqueados.',
     already: 'Já estás verificado.',
     notConfigured: 'A verificação ainda não está configurada. Um admin tem de usar `/setup` ou `/verification panel role:`.',
@@ -270,7 +270,6 @@ export default {
     claimed: '🙋 {user} está a tratar deste ticket.',
     notATicket: 'Este não é um canal de ticket aberto.',
     noPermission: 'Só quem abriu o ticket ou a staff o pode fechar.',
-    transcriptDm: 'O teu ticket no **{server}** foi fechado. Aqui está a transcrição:',
     logOpened: '🎫 Ticket #{number} aberto por {user}: {channel}',
   },
 

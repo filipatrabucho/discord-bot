@@ -110,7 +110,8 @@ const DEFAULT_SETTINGS = {
   // Every channel created by /setup, by key (also the non-configurable ones like general).
   channelIds: {},
   welcome: { enabled: true, message: null, image: null, dm: false, goodbyeEnabled: true, goodbyeMessage: null },
-  verification: { enabled: false, minAccountAgeDays: 0 },
+  // rules: custom rules text (null = default rules)
+  verification: { enabled: false, minAccountAgeDays: 0, rules: null },
   tickets: { counter: 0 },
   levels: { enabled: true },
   music: { restrictToChannel: true },

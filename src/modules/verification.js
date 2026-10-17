@@ -1,14 +1,20 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle } from 'discord.js';
+import {
+  ActionRowBuilder, ButtonBuilder, ButtonStyle, CheckboxBuilder, LabelBuilder, ModalBuilder, TextDisplayBuilder, TextInputBuilder, TextInputStyle,
+} from 'discord.js';
 import { getSettings } from '../database.js';
-import { t, langOf, locales } from '../i18n/index.js';
+import { t, langOf } from '../i18n/index.js';
 import { embed, ephemeral, failure } from '../utils/embeds.js';
 import { sendLog } from './logs.js';
 
-export function rulesEmbed(lang, guild, customRules = null) {
-  const rules = customRules ?? t(lang, 'rules.list').map((rule, i) => `**${i + 1}.** ${rule}`).join('\n\n');
+/** The server's rules as text: the custom ones saved with /verification rules, or the defaults. */
+export function rulesText(lang, guildId) {
+  return getSettings(guildId).verification.rules ?? t(lang, 'rules.list').map((rule, i) => `**${i + 1}.** ${rule}`).join('\n\n');
+}
+
+export function rulesEmbed(lang, guild) {
   return embed('info')
     .setTitle(t(lang, 'rules.title', { server: guild.name }))
-    .setDescription(rules)
+    .setDescription(rulesText(lang, guild.id))
     .setFooter({ text: t(lang, 'rules.footer') });
 }
 
@@ -17,7 +23,7 @@ export function verifyPanel(lang, guild) {
     embeds: [
       embed('success')
         .setTitle(t(lang, 'verify.panelTitle'))
-        .setDescription(t(lang, 'verify.panelDescription', { server: guild.name, word: t(lang, 'verify.word') }))
+        .setDescription(t(lang, 'verify.panelDescription', { server: guild.name }))
         .setThumbnail(guild.iconURL() ?? null),
     ],
     components: [
@@ -27,8 +33,6 @@ export function verifyPanel(lang, guild) {
     ],
   };
 }
-
-const ACCEPTED_WORDS = new Set(Object.values(locales).map((l) => l.verify.word.toLowerCase()));
 
 export async function handleComponent(interaction, action) {
   const { guild, member } = interaction;
@@ -43,34 +47,26 @@ export async function handleComponent(interaction, action) {
     if (minDays && Date.now() - interaction.user.createdTimestamp < minDays * 86_400_000) {
       return failure(interaction, t(lang, 'verify.accountTooNew', { days: minDays }));
     }
+    // The whole rules text plus an "I accept" checkbox, all in one pop-up.
+    const rules = rulesText(lang, guild.id);
     const modal = new ModalBuilder()
       .setCustomId('verify:submit')
-      .setTitle(t(lang, 'verify.modalTitle'))
-      .addComponents(
-        new ActionRowBuilder().addComponents(
-          new TextInputBuilder()
-            .setCustomId('confirm')
-            .setLabel(t(lang, 'verify.confirmLabel', { word: t(lang, 'verify.word') }))
-            .setPlaceholder(t(lang, 'verify.word'))
-            .setStyle(TextInputStyle.Short)
-            .setRequired(true)
-            .setMaxLength(30),
-        ),
-        new ActionRowBuilder().addComponents(
-          new TextInputBuilder()
-            .setCustomId('source')
-            .setLabel(t(lang, 'verify.sourceLabel'))
-            .setStyle(TextInputStyle.Short)
-            .setRequired(false)
-            .setMaxLength(100),
-        ),
+      .setTitle(t(lang, 'verify.modalTitle', { server: guild.name }).slice(0, 45))
+      .addTextDisplayComponents(new TextDisplayBuilder().setContent(`## ${t(lang, 'rules.title', { server: guild.name })}\n${rules}`.slice(0, 3900)))
+      .addLabelComponents(
+        new LabelBuilder()
+          .setLabel(t(lang, 'verify.acceptLabel'))
+          .setDescription(t(lang, 'verify.acceptDescription'))
+          .setCheckboxComponent(new CheckboxBuilder().setCustomId('accept')),
+        new LabelBuilder()
+          .setLabel(t(lang, 'verify.sourceLabel'))
+          .setTextInputComponent(new TextInputBuilder().setCustomId('source').setStyle(TextInputStyle.Short).setRequired(false).setMaxLength(100)),
       );
     return interaction.showModal(modal);
   }
 
   if (action === 'submit') {
-    const answer = interaction.fields.getTextInputValue('confirm').trim().toLowerCase();
-    if (!ACCEPTED_WORDS.has(answer)) return failure(interaction, t(lang, 'verify.wrongWord', { word: t(lang, 'verify.word') }));
+    if (!interaction.fields.getCheckbox('accept')) return failure(interaction, t(lang, 'verify.mustAccept'));
     await member.roles.add(role, 'Verified');
     const source = interaction.fields.getTextInputValue('source')?.trim();
     await sendLog(

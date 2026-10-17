@@ -63,6 +63,9 @@ export function registerEvents(client) {
 
   client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.inGuild() && !interaction.isChatInputCommand()) return;
+    if (interaction.isAutocomplete()) {
+      return client.commands.get(interaction.commandName)?.autocomplete?.(interaction).catch((e) => console.warn('[autocomplete]', e.message));
+    }
     try {
       if (interaction.isChatInputCommand()) {
         const cmd = client.commands.get(interaction.commandName);

@@ -1,11 +1,16 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { describe, choice } from '../utils/localize.js';
-import { control, LOOP_MODES } from '../modules/music.js';
+import { autocomplete, control, LOOP_MODES, play } from '../modules/music.js';
 
 export const category = 'music';
 
 export const data = describe(new SlashCommandBuilder().setName('music'), 'music.description')
   .setDMPermission(false)
+  .addSubcommand((s) =>
+    describe(s.setName('play'), 'play.description').addStringOption((o) =>
+      describe(o.setName('query'), 'play.query').setRequired(true).setMaxLength(500).setAutocomplete(true),
+    ),
+  )
   .addSubcommand((s) => describe(s.setName('skip'), 'music.skip'))
   .addSubcommand((s) => describe(s.setName('stop'), 'music.stop'))
   .addSubcommand((s) => describe(s.setName('pause'), 'music.pause'))
@@ -25,8 +30,11 @@ export const data = describe(new SlashCommandBuilder().setName('music'), 'music.
     describe(s.setName('remove'), 'music.remove').addIntegerOption((o) => describe(o.setName('position'), 'music.position').setRequired(true).setMinValue(1)),
   );
 
+export { autocomplete };
+
 export async function execute(interaction) {
   const sub = interaction.options.getSubcommand();
+  if (sub === 'play') return play(interaction, interaction.options.getString('query'));
   const arg = {
     volume: () => interaction.options.getInteger('level'),
     loop: () => LOOP_MODES[interaction.options.getString('mode')],

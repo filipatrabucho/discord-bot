@@ -160,12 +160,9 @@ export async function closeTicket(interaction) {
     )
     .setTimestamp();
 
+  // The transcript only goes to the staff log channel, never to the member.
   const logChannel = guild.channels.cache.get(settings.channels.ticketLogs ?? settings.channels.logs);
   await logChannel?.send({ embeds: [summary], files: [new AttachmentBuilder(Buffer.from(text), { name })] }).catch(() => {});
-  const owner = await guild.client.users.fetch(ticket.user_id).catch(() => null);
-  await owner
-    ?.send({ content: t(lang, 'tickets.transcriptDm', { server: guild.name }), embeds: [summary], files: [new AttachmentBuilder(Buffer.from(text), { name })] })
-    .catch(() => {});
 
   setTimeout(() => channel.delete(`Ticket #${ticket.number} closed`).catch(() => {}), 5_000);
 }

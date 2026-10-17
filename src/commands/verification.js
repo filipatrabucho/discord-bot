@@ -45,9 +45,10 @@ export async function execute(interaction) {
     return success(interaction, t(lang, 'verification.panelSent', { channel: `<#${channel.id}>` }));
   }
   if (sub === 'rules') {
+    // Saved so the verification pop-up shows the same rules.
     const text = interaction.options.getString('text')?.replaceAll('\\n', '\n');
-    await channel.send({ embeds: [rulesEmbed(lang, guild, text)] });
-    updateSettings(guild.id, { channels: { rules: channel.id } });
+    updateSettings(guild.id, { channels: { rules: channel.id }, ...(text && { verification: { rules: text } }) });
+    await channel.send({ embeds: [rulesEmbed(lang, guild)] });
     return success(interaction, t(lang, 'verification.rulesSent', { channel: `<#${channel.id}>` }));
   }
   if (sub === 'account-age') {

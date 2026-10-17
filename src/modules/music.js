@@ -87,6 +87,25 @@ export function canControl(member, queue) {
   return member.voice.channel.members.filter((m) => !m.user.bot).size <= 1;
 }
 
+/** Live search suggestions while the user types the song/artist. Discord gives us 3 seconds to answer. */
+export async function autocomplete(interaction) {
+  const query = interaction.options.getFocused().trim();
+  if (query.length < 2) return interaction.respond([]);
+  try {
+    const result = await Promise.race([
+      player.search(query, { requestedBy: interaction.user }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 2_500)),
+    ]);
+    const choices = result.tracks.slice(0, 10).map((track) => {
+      const name = `${track.title} — ${track.author}`.slice(0, 100);
+      return { name, value: track.url.length <= 100 ? track.url : name };
+    });
+    return interaction.respond(choices);
+  } catch {
+    return interaction.respond([]).catch(() => {});
+  }
+}
+
 export async function play(interaction, query) {
   const lang = langOf(interaction.guild);
   const error = checkVoice(interaction, { requireQueue: false });
