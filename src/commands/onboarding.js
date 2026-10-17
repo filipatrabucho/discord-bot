@@ -1,8 +1,9 @@
 import { GuildOnboardingMode, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
-import { getSettings } from '../database.js';
+import { getSettings, updateSettings } from '../database.js';
 import { t, langOf } from '../i18n/index.js';
 import { describe } from '../utils/localize.js';
 import { embed, ephemeral, failure } from '../utils/embeds.js';
+import { enableRulesScreening } from '../modules/verification.js';
 
 export const category = 'admin';
 
@@ -10,6 +11,7 @@ export const data = describe(new SlashCommandBuilder().setName('onboarding'), 'o
   .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
   .setDMPermission(false)
   .addSubcommand((s) => describe(s.setName('setup'), 'onboarding.setup'))
+  .addSubcommand((s) => describe(s.setName('rules'), 'onboarding.rules'))
   .addSubcommand((s) => describe(s.setName('status'), 'onboarding.status'));
 
 export async function execute(interaction) {
@@ -19,6 +21,22 @@ export async function execute(interaction) {
 
   if (!guild.features.includes('COMMUNITY')) {
     return failure(interaction, t(lang, 'onboarding.needCommunity'));
+  }
+
+  if (interaction.options.getSubcommand() === 'rules') {
+    await interaction.deferReply({ flags: ephemeral });
+    if (!settings.roles.member || !guild.roles.cache.has(settings.roles.member)) {
+      return interaction.editReply({ embeds: [embed('danger').setDescription(t(lang, 'verify.notConfigured'))] });
+    }
+    // Members now get the Member role only after accepting Discord's own rules pop-up.
+    updateSettings(guild.id, { verification: { enabled: true, mode: 'discord' } });
+    const ok = await enableRulesScreening(guild, lang).then(() => true, (e) => {
+      console.warn('[onboarding] rules screening:', e.message);
+      return false;
+    });
+    return interaction.editReply({
+      embeds: [embed(ok ? 'success' : 'warning').setDescription(t(lang, ok ? 'onboarding.rulesDone' : 'onboarding.rulesManual'))],
+    });
   }
 
   if (interaction.options.getSubcommand() === 'status') {

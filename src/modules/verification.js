@@ -82,3 +82,38 @@ export async function handleComponent(interaction, action) {
     });
   }
 }
+
+/** Rules as a plain list for Discord's native rules screening (max 16 rules of 300 characters). */
+export function rulesList(lang, guildId) {
+  return rulesText(lang, guildId)
+    .split(/\n+/)
+    .map((line) => line.replace(/^\s*(\*\*)?\d+[.)]\s*(\*\*)?\s*/, '').trim())
+    .filter(Boolean)
+    .slice(0, 16)
+    .map((rule) => rule.slice(0, 300));
+}
+
+/**
+ * Turns on Discord's native "accept the rules" pop-up (Community servers only).
+ * This endpoint isn't officially documented for bots, so callers must handle failure.
+ */
+export async function enableRulesScreening(guild, lang) {
+  await guild.client.rest.patch(`/guilds/${guild.id}/member-verification`, {
+    body: {
+      enabled: true,
+      description: t(lang, 'onboarding.screeningDescription', { server: guild.name }).slice(0, 300),
+      form_fields: [{ field_type: 'TERMS', label: t(lang, 'onboarding.screeningLabel'), required: true, values: rulesList(lang, guild.id) }],
+    },
+  });
+}
+
+/** In 'discord' mode: give the Member role when someone accepts the native rules pop-up. */
+export async function onScreeningPassed(before, after) {
+  if (!before.pending || after.pending || after.user.bot) return;
+  const settings = getSettings(after.guild.id);
+  if (!settings.verification.enabled || settings.verification.mode !== 'discord') return;
+  const role = after.guild.roles.cache.get(settings.roles.member);
+  if (!role || after.roles.cache.has(role.id)) return;
+  await after.roles.add(role, 'Accepted the server rules');
+  await sendLog(after.guild, embed('success').setDescription(t(langOf(after.guild), 'verify.logVerified', { user: `<@${after.id}>` })));
+}

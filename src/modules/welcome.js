@@ -30,7 +30,7 @@ export function buildWelcome(member, inviteInfo = null) {
   const settings = getSettings(guild.id);
   const lang = langOf(guild);
   // New members who still have to accept the rules get the button right on the welcome card.
-  const memberRole = settings.verification.enabled && guild.roles.cache.get(settings.roles.member);
+  const memberRole = settings.verification.enabled && settings.verification.mode === 'button' && guild.roles.cache.get(settings.roles.member);
   const needsVerify = Boolean(memberRole && !member.roles.cache.has(memberRole.id));
   const text = settings.welcome.message ?? t(lang, needsVerify ? 'welcome.defaultMessageVerify' : 'welcome.defaultMessage');
 
@@ -87,9 +87,11 @@ export async function sendGoodbye(member) {
 /** Auto-role for new members when the verification gate is off. */
 export async function applyAutoRoles(member) {
   const settings = getSettings(member.guild.id);
-  const ids = member.user.bot
-    ? [settings.roles.bots]
-    : [settings.roles.autorole, settings.verification.enabled ? null : settings.roles.member];
+  const { enabled, mode } = settings.verification;
+  // In 'discord' mode a member who still has to accept the native rules pop-up is "pending";
+  // they get the Member role from onScreeningPassed() once they accept.
+  const giveMember = !enabled || (mode === 'discord' && !member.pending);
+  const ids = member.user.bot ? [settings.roles.bots] : [settings.roles.autorole, giveMember ? settings.roles.member : null];
   const roles = ids.filter(Boolean).filter((id) => member.guild.roles.cache.has(id));
   if (roles.length) await member.roles.add(roles, 'Auto role').catch((e) => console.warn('[autorole]', e.message));
 }

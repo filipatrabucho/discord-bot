@@ -105,7 +105,10 @@ export function registerEvents(client) {
     await sendLog(member.guild, embed('danger').setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() }).setDescription(t(lang, 'logs.memberLeft', { user: `<@${member.id}>` })));
   });
 
-  client.on(Events.GuildMemberUpdate, (before, after) => onMemberUpdate(before, after).catch((e) => console.warn('[premium]', e.message)));
+  client.on(Events.GuildMemberUpdate, (before, after) => {
+    onMemberUpdate(before, after).catch((e) => console.warn('[premium]', e.message));
+    verification.onScreeningPassed(before, after).catch((e) => console.warn('[verification]', e.message));
+  });
   client.on(Events.InviteCreate, onInviteCreate);
   client.on(Events.MessageCreate, (message) => handleMessage(message).catch((e) => console.warn('[levels]', e.message)));
   client.on(Events.MessageDelete, (message) => logMessageDelete(message)?.catch(() => {}));

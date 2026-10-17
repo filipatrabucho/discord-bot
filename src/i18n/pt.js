@@ -441,6 +441,12 @@ export default {
     interestsPrompt: 'Em que estás interessado?',
     channelsPrompt: 'Que áreas queres ver?',
     options: { music: 'Música', support: 'Suporte', suggestions: 'Sugestões' },
+    screeningDescription: 'Bem-vindo ao {server}! Lê e aceita as regras para desbloquear o servidor.',
+    screeningLabel: 'Li e concordo com as regras',
+    rulesDone:
+      '✅ O popup de regras do Discord está ativo. Os novos membros veem-no logo ao entrar e só recebem o cargo ✅ Membro (e veem os outros canais) depois de aceitar.\n\nTesta com uma conta que **ainda não esteja** no servidor. Podes apagar o canal #verificação, já não é preciso.',
+    rulesManual:
+      '⚠️ O Discord não me deixou ativar o popup de regras automaticamente, por isso ativa-o à mão:\n**Definições do servidor → Configuração de segurança** (ou **Integração**) → **Triagem de regras / Regras do servidor** → adiciona as regras e ativa.\n\nJá fiquei em modo Discord: assim que alguém aceitar esse popup, dou-lhe o cargo ✅ Membro.',
     done: '✅ Onboarding ativado! Os novos membros vão ver o popup com as perguntas antes de entrar no servidor. Personaliza em **Definições do Servidor → Onboarding**.',
     failed: 'O Discord recusou a configuração do onboarding: `{error}`\nO Discord exige pelo menos 7 canais padrão (5 onde o @everyone pode falar). Desliga a verificação ou ajusta em **Definições do Servidor → Onboarding**.',
   },
@@ -553,6 +559,7 @@ export default {
     onboarding: {
       description: 'Configura os popups nativos de entrada do Discord (servidores Comunidade)',
       setup: 'Cria as perguntas do onboarding a partir da configuração do bot',
+      rules: 'Ativa o popup do próprio Discord para aceitar as regras ao entrar',
       status: 'Mostra o onboarding atual',
     },
     invites: {

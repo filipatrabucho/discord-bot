@@ -441,6 +441,12 @@ export default {
     interestsPrompt: 'What are you interested in?',
     channelsPrompt: 'Which areas do you want to see?',
     options: { music: 'Music', support: 'Support', suggestions: 'Suggestions' },
+    screeningDescription: 'Welcome to {server}! Read and accept the rules to unlock the server.',
+    screeningLabel: 'I have read and agree to the rules',
+    rulesDone:
+      "✅ Discord's rules pop-up is on. New members see it as soon as they join and only get the ✅ Member role (and see the other channels) after accepting.\n\nTest it with an account that is **not** in the server yet. You can delete the #verify channel, it is no longer needed.",
+    rulesManual:
+      "⚠️ Discord did not let me turn on the rules pop-up automatically, so turn it on by hand:\n**Server Settings → Safety Setup** (or **Onboarding**) → **Rules Screening / Server Rules** → add the rules and enable it.\n\nI'm already in Discord mode: as soon as someone accepts that pop-up, I give them the ✅ Member role.",
     done: '✅ Onboarding enabled! New members will see the questions pop-up before entering the server. Customize it in **Server Settings → Onboarding**.',
     failed: 'Discord refused the onboarding setup: `{error}`\nDiscord requires at least 7 default channels (5 where @everyone can talk). Disable the verification gate or adjust it in **Server Settings → Onboarding**.',
   },
@@ -553,6 +559,7 @@ export default {
     onboarding: {
       description: "Configure Discord's native join pop-ups (Community servers)",
       setup: 'Create the onboarding questions from the bot setup',
+      rules: "Turn on Discord's own 'accept the rules' pop-up for new members",
       status: 'Show the current onboarding',
     },
     invites: {

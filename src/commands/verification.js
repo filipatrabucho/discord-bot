@@ -40,7 +40,7 @@ export async function execute(interaction) {
     if (role) updateSettings(guild.id, { roles: { member: role.id } });
     const settings = getSettings(guild.id);
     if (!settings.roles.member) return failure(interaction, t(lang, 'verify.notConfigured'));
-    updateSettings(guild.id, { verification: { enabled: true }, channels: { verify: channel.id } });
+    updateSettings(guild.id, { verification: { enabled: true, mode: 'button' }, channels: { verify: channel.id } });
     await channel.send(verifyPanel(lang, guild));
     return success(interaction, t(lang, 'verification.panelSent', { channel: `<#${channel.id}>` }));
   }

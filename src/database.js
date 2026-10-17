@@ -111,7 +111,8 @@ const DEFAULT_SETTINGS = {
   channelIds: {},
   welcome: { enabled: true, message: null, image: null, dm: false, goodbyeEnabled: true, goodbyeMessage: null },
   // rules: custom rules text (null = default rules)
-  verification: { enabled: false, minAccountAgeDays: 0, rules: null },
+  // mode: 'button' = the bot's own pop-up; 'discord' = Discord's native rules screening, Member role given once accepted.
+  verification: { enabled: false, mode: 'button', minAccountAgeDays: 0, rules: null },
   tickets: { counter: 0 },
   levels: { enabled: true },
   music: { restrictToChannel: true },
