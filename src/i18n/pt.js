@@ -456,6 +456,7 @@ export default {
 
   welcomeScreen: {
     description: 'Bem-vindo ao {server}! Lê as regras, escolhe os teus cargos e vem dizer olá.',
+    descriptionRules: 'Bem-vindo ao {server}! 👉 Ao fechar esta janela, clica em Concluído para leres e aceitares as regras.',
     channels: {
       rules: 'Lê as regras',
       selfRoles: 'Escolhe os teus cargos',

@@ -456,6 +456,7 @@ export default {
 
   welcomeScreen: {
     description: 'Welcome to {server}! Read the rules, pick your roles and come say hi.',
+    descriptionRules: 'Welcome to {server}! 👉 When you close this, click Complete to read and accept the rules.',
     channels: {
       rules: 'Read the rules',
       selfRoles: 'Pick your roles',

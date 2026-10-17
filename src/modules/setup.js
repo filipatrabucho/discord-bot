@@ -308,10 +308,15 @@ const WELCOME_SCREEN_CHANNELS = [
 export async function applyWelcomeScreen(guild, lang) {
   const settings = getSettings(guild.id);
   const ids = { ...settings.channelIds, ...Object.fromEntries(Object.entries(settings.channels).filter(([, v]) => v)) };
-  const entries = WELCOME_SCREEN_CHANNELS.map((c) => ({ ...c, channel: guild.channels.cache.get(ids[c.key]) })).filter((c) => c.channel?.isTextBased());
+  // With Discord's rules pop-up on, the rules are read and accepted there, so a "read the rules" link
+  // (which just closes the screen and opens the channel) would only get in the way.
+  const rulesPopup = settings.verification.enabled && settings.verification.mode === 'discord';
+  const entries = WELCOME_SCREEN_CHANNELS.filter((c) => !(rulesPopup && c.key === 'rules'))
+    .map((c) => ({ ...c, channel: guild.channels.cache.get(ids[c.key]) }))
+    .filter((c) => c.channel?.isTextBased());
   const toData = (list) =>
     list.slice(0, 5).map((c) => ({ channel: c.channel.id, emoji: c.emoji, description: t(lang, `welcomeScreen.channels.${c.key}`).slice(0, 42) }));
-  const description = t(lang, 'welcomeScreen.description', { server: guild.name }).slice(0, 140);
+  const description = t(lang, rulesPopup ? 'welcomeScreen.descriptionRules' : 'welcomeScreen.description', { server: guild.name }).slice(0, 140);
 
   try {
     await guild.editWelcomeScreen({ enabled: true, description, welcomeChannels: toData(entries) });
