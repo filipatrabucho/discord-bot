@@ -248,10 +248,11 @@ export async function runSetup(guild, { template, lang, verification, cleanup },
   await guild.setSystemChannelFlags([GuildSystemChannelFlags.SuppressJoinNotifications, GuildSystemChannelFlags.SuppressJoinNotificationReplies]).catch(() => {});
   if (cleanup) {
     await report(t(lang, 'setup.progress.cleanup'));
-    const defaults = new Set(['general', 'General', 'Text Channels', 'Voice Channels', 'Canais de texto', 'Canais de voz', 'geral', 'Geral']);
+    // Default channel/category names Discord creates (EN/PT), compared case-insensitively.
+    const defaults = new Set(['general', 'geral', 'text channels', 'voice channels', 'canais de texto', 'canais de voz']);
     const ours = new Set([...Object.values(channels), ...Object.values(categories)]);
     for (const c of guild.channels.cache.values()) {
-      if (defaults.has(c.name) && !ours.has(c.id) && c.deletable) {
+      if (defaults.has(c.name.toLowerCase()) && !ours.has(c.id) && c.deletable) {
         if (c.type === CATEGORY && c.children.cache.size) continue;
         await c.delete('Server setup cleanup').catch(() => {});
       }
