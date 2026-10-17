@@ -185,6 +185,7 @@ export default {
     modalTitle: 'Welcome to {server}',
     acceptLabel: 'I accept the rules',
     acceptDescription: 'Required to enter the server',
+    useDiscordPopup: 'To enter, accept the rules in the Discord pop-up: click **Complete** at the bottom of the screen.',
     mustAccept: 'You have to tick **I accept the rules** to enter. Click the button again whenever you are ready.',
     sourceLabel: 'How did you find us? (optional)',
     success: '🎉 You are verified! Welcome to **{server}** — all channels are now unlocked.',

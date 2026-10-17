@@ -43,7 +43,11 @@ export function registerEvents(client) {
 
   client.once(Events.ClientReady, async () => {
     console.log(`✅ Logged in as ${client.user.tag} — ${client.guilds.cache.size} server(s)`);
-    for (const guild of client.guilds.cache.values()) await cacheGuildInvites(guild);
+    for (const guild of client.guilds.cache.values()) {
+      await cacheGuildInvites(guild);
+      // Cache members so updates (e.g. accepting the rules pop-up) compare against real data.
+      if (guild.memberCount <= 5000) await guild.members.fetch().catch((e) => console.warn('[members]', e.message));
+    }
     const tick = () => {
       checkExpired(client).catch((e) => console.warn('[premium]', e.message));
       checkEnded(client).catch((e) => console.warn('[giveaways]', e.message));

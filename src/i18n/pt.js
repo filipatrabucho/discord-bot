@@ -185,6 +185,7 @@ export default {
     modalTitle: 'Bem-vindo ao {server}',
     acceptLabel: 'Aceito as regras',
     acceptDescription: 'Obrigatório para entrar no servidor',
+    useDiscordPopup: 'Para entrares, aceita as regras no popup do Discord: clica em **Concluído** no fundo do ecrã.',
     mustAccept: 'Tens de marcar **Aceito as regras** para entrar. Clica outra vez no botão quando estiveres pronto.',
     sourceLabel: 'Como nos encontraste? (opcional)',
     success: '🎉 Estás verificado! Bem-vindo ao **{server}** — todos os canais estão desbloqueados.',

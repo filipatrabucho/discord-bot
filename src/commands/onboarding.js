@@ -32,6 +32,8 @@ export async function execute(interaction) {
     // Members now get the Member role only after accepting Discord's own rules pop-up.
     updateSettings(guild.id, { verification: { enabled: true, mode: 'discord' } });
     await gateChannels(guild);
+    const verifyChannel = guild.channels.cache.get(settings.channels.verify);
+    await verifyChannel?.permissionOverwrites.edit(guild.roles.everyone.id, { ViewChannel: false }).catch(() => {});
     // Anyone who got the Member role without accepting the rules yet loses it until they accept.
     const members = await guild.members.fetch().catch(() => null);
     for (const m of members?.values() ?? []) {

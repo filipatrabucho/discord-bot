@@ -41,6 +41,8 @@ export async function handleComponent(interaction, action) {
   const role = guild.roles.cache.get(settings.roles.member);
   if (!role) return failure(interaction, t(lang, 'verify.notConfigured'));
   if (member.roles.cache.has(role.id)) return failure(interaction, t(lang, 'verify.already'));
+  // With Discord's own rules pop-up in charge, accepting it is the only way in.
+  if (settings.verification.mode === 'discord') return failure(interaction, t(lang, 'verify.useDiscordPopup'));
 
   if (action === 'start') {
     const minDays = settings.verification.minAccountAgeDays;
@@ -109,7 +111,8 @@ export async function enableRulesScreening(guild, lang) {
 
 /** In 'discord' mode: give the Member role when someone accepts the native rules pop-up. */
 export async function onScreeningPassed(before, after) {
-  if (!before.pending || after.pending || after.user.bot) return;
+  // before.pending is null when the old state wasn't cached; only a known `false` means nothing changed.
+  if (before.pending === false || after.pending !== false || after.user.bot) return;
   const settings = getSettings(after.guild.id);
   if (!settings.verification.enabled || settings.verification.mode !== 'discord') return;
   const role = after.guild.roles.cache.get(settings.roles.member);
