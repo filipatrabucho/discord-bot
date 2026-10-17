@@ -1,12 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import Database from 'better-sqlite3';
+import { DatabaseSync } from 'node:sqlite';
 import { config } from './config.js';
 
 fs.mkdirSync(path.dirname(config.dbPath), { recursive: true });
 
-export const db = new Database(config.dbPath);
-db.pragma('journal_mode = WAL');
+// Node's built-in SQLite: no native module to compile on install.
+export const db = new DatabaseSync(config.dbPath);
+db.exec('PRAGMA journal_mode = WAL');
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS guild_settings (

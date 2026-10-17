@@ -25,7 +25,7 @@ Bot que configura um servidor de Discord novo com um só comando, em português 
 2. Em **Bot → Privileged Gateway Intents** ativa **Server Members Intent** e **Message Content Intent**.
 3. Convida o bot com permissão de **Administrador**:
    `https://discord.com/oauth2/authorize?client_id=SEU_CLIENT_ID&permissions=8&scope=bot%20applications.commands`
-4. Requer **Node.js 20.11+**.
+4. Requer **Node.js 22.13+** (recomendado: a versão LTS).
    ```bash
    npm install
    cp .env.example .env    # preenche DISCORD_TOKEN e CLIENT_ID
@@ -62,7 +62,7 @@ src/
   index.js            client + startup
   deploy-commands.js  registers slash commands
   events.js           Discord events → modules, button/modal routing
-  database.js         SQLite (better-sqlite3) + per-server settings
+  database.js         SQLite (node:sqlite, built into Node) + per-server settings
   i18n/               pt.js, en.js
   commands/           one file per slash command
   modules/            setup, welcome, verification, invites, tickets, premium, music, levels, giveaways, suggestions, selfroles, logs
