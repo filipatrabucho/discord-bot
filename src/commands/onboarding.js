@@ -4,7 +4,7 @@ import { t, langOf } from '../i18n/index.js';
 import { describe } from '../utils/localize.js';
 import { embed, ephemeral, failure } from '../utils/embeds.js';
 import { enableRulesScreening } from '../modules/verification.js';
-import { gateChannels } from '../modules/setup.js';
+import { applyWelcomeScreen, gateChannels } from '../modules/setup.js';
 
 export const category = 'admin';
 
@@ -13,6 +13,7 @@ export const data = describe(new SlashCommandBuilder().setName('onboarding'), 'o
   .setDMPermission(false)
   .addSubcommand((s) => describe(s.setName('setup'), 'onboarding.setup'))
   .addSubcommand((s) => describe(s.setName('rules'), 'onboarding.rules'))
+  .addSubcommand((s) => describe(s.setName('welcome-screen'), 'onboarding.welcomeScreen'))
   .addSubcommand((s) => describe(s.setName('status'), 'onboarding.status'));
 
 export async function execute(interaction) {
@@ -22,6 +23,23 @@ export async function execute(interaction) {
 
   if (!guild.features.includes('COMMUNITY')) {
     return failure(interaction, t(lang, 'onboarding.needCommunity'));
+  }
+
+  if (interaction.options.getSubcommand() === 'welcome-screen') {
+    await interaction.deferReply({ flags: ephemeral });
+    try {
+      const used = await applyWelcomeScreen(guild, lang);
+      const onboardingOn = (await guild.fetchOnboarding().catch(() => null))?.enabled;
+      return interaction.editReply({
+        embeds: [
+          embed('success').setDescription(
+            `${t(lang, 'welcomeScreen.done', { channels: used.map((id) => `<#${id}>`).join(' ') })}${onboardingOn ? `\n\n${t(lang, 'welcomeScreen.onboardingNote')}` : ''}`,
+          ),
+        ],
+      });
+    } catch (e) {
+      return interaction.editReply({ embeds: [embed('danger').setDescription(t(lang, 'welcomeScreen.failed', { error: e.message }))] });
+    }
   }
 
   if (interaction.options.getSubcommand() === 'rules') {

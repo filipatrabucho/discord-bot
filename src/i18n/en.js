@@ -454,6 +454,21 @@ export default {
     failed: 'Discord refused the onboarding setup: `{error}`\nDiscord requires at least 7 default channels (5 where @everyone can talk). Disable the verification gate or adjust it in **Server Settings → Onboarding**.',
   },
 
+  welcomeScreen: {
+    description: 'Welcome to {server}! Read the rules, pick your roles and come say hi.',
+    channels: {
+      rules: 'Read the rules',
+      selfRoles: 'Pick your roles',
+      general: 'Say hi to everyone',
+      music: 'Listen to music with us',
+      createTicket: 'Need help? Open a ticket',
+      announcements: 'Server news',
+    },
+    done: "✅ Discord's Welcome Screen is filled in with: {channels}\nSee it in **Server Settings → Welcome Screen** (Preview).",
+    onboardingNote: "⚠️ Discord's Onboarding is also on, and it replaces the Welcome Screen for new members. To show the Welcome Screen, turn off Onboarding in **Server Settings → Onboarding**.",
+    failed: 'Discord refused the Welcome Screen: `{error}`',
+  },
+
   config: {
     title: '⚙️ Server configuration',
     language: 'Language',
@@ -563,6 +578,7 @@ export default {
       description: "Configure Discord's native join pop-ups (Community servers)",
       setup: 'Create the onboarding questions from the bot setup',
       rules: "Turn on Discord's own 'accept the rules' pop-up for new members",
+      welcomeScreen: "Fill in Discord's Welcome Screen with the server's main channels",
       status: 'Show the current onboarding',
     },
     invites: {

@@ -260,6 +260,9 @@ export async function runSetup(guild, { template, lang, verification, cleanup },
     }
   }
 
+  if (guild.features.includes('COMMUNITY')) {
+    await applyWelcomeScreen(guild, lang).catch((e) => result.notes.push(t(lang, 'welcomeScreen.failed', { error: e.message })));
+  }
   if (Object.values(roles).some((r) => !r.editable)) result.notes.push(t(lang, 'setup.notes.rolePosition'));
   return { rolesCreated: result.roles, channelsCreated: result.channels, notes: result.notes, channels };
 }
@@ -285,4 +288,39 @@ export async function gateChannels(guild) {
     await channel.permissionOverwrites.edit(memberRole.id, { ViewChannel: true }, { reason: 'Members-only gate' });
   }
   return targets.length;
+}
+
+// Up to 5 channels for Discord's Welcome Screen, in order of preference.
+const WELCOME_SCREEN_CHANNELS = [
+  { key: 'rules', emoji: '📜' },
+  { key: 'selfRoles', emoji: '🎭' },
+  { key: 'general', emoji: '💬' },
+  { key: 'music', emoji: '🎵' },
+  { key: 'createTicket', emoji: '🎫' },
+  { key: 'announcements', emoji: '📣' },
+];
+
+/**
+ * Fills Discord's native Welcome Screen (Community servers) with the server's main channels.
+ * If Discord refuses channels new members can't see yet, retries with the public ones only.
+ * Returns the channel ids that were used.
+ */
+export async function applyWelcomeScreen(guild, lang) {
+  const settings = getSettings(guild.id);
+  const ids = { ...settings.channelIds, ...Object.fromEntries(Object.entries(settings.channels).filter(([, v]) => v)) };
+  const entries = WELCOME_SCREEN_CHANNELS.map((c) => ({ ...c, channel: guild.channels.cache.get(ids[c.key]) })).filter((c) => c.channel?.isTextBased());
+  const toData = (list) =>
+    list.slice(0, 5).map((c) => ({ channel: c.channel.id, emoji: c.emoji, description: t(lang, `welcomeScreen.channels.${c.key}`).slice(0, 42) }));
+  const description = t(lang, 'welcomeScreen.description', { server: guild.name }).slice(0, 140);
+
+  try {
+    await guild.editWelcomeScreen({ enabled: true, description, welcomeChannels: toData(entries) });
+    return entries.slice(0, 5).map((c) => c.channel.id);
+  } catch (error) {
+    const everyone = guild.roles.everyone;
+    const visible = entries.filter((c) => c.channel.permissionsFor(everyone)?.has(P.ViewChannel));
+    if (!visible.length || visible.length === entries.length) throw error;
+    await guild.editWelcomeScreen({ enabled: true, description, welcomeChannels: toData(visible) });
+    return visible.slice(0, 5).map((c) => c.channel.id);
+  }
 }

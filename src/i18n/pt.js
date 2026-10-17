@@ -454,6 +454,21 @@ export default {
     failed: 'O Discord recusou a configuração do onboarding: `{error}`\nO Discord exige pelo menos 7 canais padrão (5 onde o @everyone pode falar). Desliga a verificação ou ajusta em **Definições do Servidor → Onboarding**.',
   },
 
+  welcomeScreen: {
+    description: 'Bem-vindo ao {server}! Lê as regras, escolhe os teus cargos e vem dizer olá.',
+    channels: {
+      rules: 'Lê as regras',
+      selfRoles: 'Escolhe os teus cargos',
+      general: 'Diz olá a toda a gente',
+      music: 'Ouve música connosco',
+      createTicket: 'Precisas de ajuda? Abre um ticket',
+      announcements: 'Novidades do servidor',
+    },
+    done: '✅ O Ecrã de boas-vindas do Discord ficou preenchido com: {channels}\nVê-o em **Definições do servidor → Ecrã de boas-vindas** (Pré-visualizar).',
+    onboardingNote: '⚠️ A Integração (Onboarding) do Discord também está ativa, e substitui o Ecrã de boas-vindas para os novos membros. Para mostrar o Ecrã de boas-vindas, desativa a Integração em **Definições do servidor → Integração**.',
+    failed: 'O Discord recusou o Ecrã de boas-vindas: `{error}`',
+  },
+
   config: {
     title: '⚙️ Configuração do servidor',
     language: 'Língua',
@@ -563,6 +578,7 @@ export default {
       description: 'Configura os popups nativos de entrada do Discord (servidores Comunidade)',
       setup: 'Cria as perguntas do onboarding a partir da configuração do bot',
       rules: 'Ativa o popup do próprio Discord para aceitar as regras ao entrar',
+      welcomeScreen: 'Preenche o Ecrã de boas-vindas do Discord com os canais principais',
       status: 'Mostra o onboarding atual',
     },
     invites: {
