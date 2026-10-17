@@ -4,6 +4,7 @@ import { t, langOf } from '../i18n/index.js';
 import { describe } from '../utils/localize.js';
 import { embed, ephemeral, failure } from '../utils/embeds.js';
 import { enableRulesScreening } from '../modules/verification.js';
+import { gateChannels } from '../modules/setup.js';
 
 export const category = 'admin';
 
@@ -30,6 +31,12 @@ export async function execute(interaction) {
     }
     // Members now get the Member role only after accepting Discord's own rules pop-up.
     updateSettings(guild.id, { verification: { enabled: true, mode: 'discord' } });
+    await gateChannels(guild);
+    // Anyone who got the Member role without accepting the rules yet loses it until they accept.
+    const members = await guild.members.fetch().catch(() => null);
+    for (const m of members?.values() ?? []) {
+      if (m.pending && m.roles.cache.has(settings.roles.member)) await m.roles.remove(settings.roles.member, 'Has not accepted the rules').catch(() => {});
+    }
     const ok = await enableRulesScreening(guild, lang).then(() => true, (e) => {
       console.warn('[onboarding] rules screening:', e.message);
       return false;

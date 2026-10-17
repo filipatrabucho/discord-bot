@@ -225,7 +225,8 @@ export async function runSetup(guild, { template, lang, verification, cleanup },
   if (guild.memberCount <= 1000) {
     const members = await guild.members.fetch().catch(() => null);
     for (const m of members?.values() ?? []) {
-      const roleId = m.user.bot ? roles.bots.id : verification ? roles.member.id : null;
+      // Pending = hasn't accepted Discord's rules pop-up yet; they get Member once they do.
+      const roleId = m.user.bot ? roles.bots.id : verification && !m.pending ? roles.member.id : null;
       if (roleId && !m.roles.cache.has(roleId) && m.id !== guild.members.me.id) await m.roles.add(roleId, 'Server setup').catch(() => {});
     }
   } else {
@@ -261,4 +262,27 @@ export async function runSetup(guild, { template, lang, verification, cleanup },
 
   if (Object.values(roles).some((r) => !r.editable)) result.notes.push(t(lang, 'setup.notes.rolePosition'));
   return { rolesCreated: result.roles, channelsCreated: result.channels, notes: result.notes, channels };
+}
+
+/**
+ * Re-applies the members-only gate without rebuilding the server: the Community, Music and Support
+ * categories (and everything in them) plus the roles channel become visible only to the Member role.
+ */
+export async function gateChannels(guild) {
+  const settings = getSettings(guild.id);
+  const memberRole = guild.roles.cache.get(settings.roles.member);
+  if (!memberRole) return 0;
+  const everyone = guild.roles.everyone.id;
+  const targets = [];
+  for (const key of ['community', 'music', 'support']) {
+    const category = guild.channels.cache.get(settings.categories[key]);
+    if (category) targets.push(category, ...category.children.cache.values());
+  }
+  const roles = guild.channels.cache.get(settings.channels.selfRoles);
+  if (roles) targets.push(roles);
+  for (const channel of targets) {
+    await channel.permissionOverwrites.edit(everyone, { ViewChannel: false }, { reason: 'Members-only gate' });
+    await channel.permissionOverwrites.edit(memberRole.id, { ViewChannel: true }, { reason: 'Members-only gate' });
+  }
+  return targets.length;
 }
