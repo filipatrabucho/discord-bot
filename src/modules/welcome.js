@@ -1,0 +1,91 @@
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { getSettings } from '../database.js';
+import { t, langOf } from '../i18n/index.js';
+import { embed } from '../utils/embeds.js';
+import { getStats } from './invites.js';
+
+/** Replaces the welcome/goodbye placeholders. */
+export function fillPlaceholders(text, member, lang, inviteInfo = null) {
+  const inviter = inviteInfo?.inviterId
+    ? `<@${inviteInfo.inviterId}>`
+    : inviteInfo?.vanity
+      ? t(lang, 'invites.vanity')
+      : t(lang, 'invites.unknown');
+  const invites = inviteInfo?.inviterId ? getStats(member.guild.id, inviteInfo.inviterId).valid : 0;
+  return text
+    .replaceAll('{user}', `<@${member.id}>`)
+    .replaceAll('{username}', member.user.username)
+    .replaceAll('{server}', member.guild.name)
+    .replaceAll('{count}', String(member.guild.memberCount))
+    .replaceAll('{inviter}', inviter)
+    .replaceAll('{invites}', String(invites));
+}
+
+function channelLink(guild, id) {
+  return `https://discord.com/channels/${guild.id}/${id}`;
+}
+
+export function buildWelcome(member, inviteInfo = null) {
+  const { guild } = member;
+  const settings = getSettings(guild.id);
+  const lang = langOf(guild);
+  const text = settings.welcome.message ?? t(lang, 'welcome.defaultMessage');
+
+  const e = embed('primary')
+    .setAuthor({ name: guild.name, iconURL: guild.iconURL() ?? undefined })
+    .setTitle(t(lang, 'welcome.title', { username: member.user.username }))
+    .setDescription(fillPlaceholders(text, member, lang, inviteInfo))
+    .setThumbnail(member.user.displayAvatarURL({ size: 256 }))
+    .setFooter({ text: t(lang, 'welcome.footer', { count: guild.memberCount }) })
+    .setTimestamp();
+  if (settings.welcome.image) e.setImage(settings.welcome.image);
+  if (inviteInfo) e.addFields({ name: t(lang, 'welcome.invitedBy'), value: fillPlaceholders('{inviter} ({invites})', member, lang, inviteInfo) });
+
+  const buttons = [];
+  const { rules, verify, selfRoles } = settings.channels;
+  if (rules) buttons.push(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(t(lang, 'welcome.rulesButton')).setEmoji('📜').setURL(channelLink(guild, rules)));
+  if (verify && settings.verification.enabled) buttons.push(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(t(lang, 'welcome.verifyButton')).setEmoji('✅').setURL(channelLink(guild, verify)));
+  if (selfRoles) buttons.push(new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel(t(lang, 'welcome.rolesButton')).setEmoji('🎭').setURL(channelLink(guild, selfRoles)));
+
+  return { content: `<@${member.id}>`, embeds: [e], components: buttons.length ? [new ActionRowBuilder().addComponents(buttons)] : [] };
+}
+
+export async function sendWelcome(member, inviteInfo) {
+  const settings = getSettings(member.guild.id);
+  if (!settings.welcome.enabled) return;
+  const payload = buildWelcome(member, inviteInfo);
+  const channel = member.guild.channels.cache.get(settings.channels.welcome);
+  await channel?.send(payload).catch((e) => console.warn('[welcome]', e.message));
+  if (settings.welcome.dm) {
+    await member.send({ embeds: payload.embeds, components: payload.components }).catch(() => {});
+  }
+}
+
+export async function sendGoodbye(member) {
+  const settings = getSettings(member.guild.id);
+  if (!settings.welcome.goodbyeEnabled) return;
+  const channel = member.guild.channels.cache.get(settings.channels.goodbye ?? settings.channels.welcome);
+  if (!channel) return;
+  const lang = langOf(member.guild);
+  const text = settings.welcome.goodbyeMessage ?? t(lang, 'welcome.defaultGoodbye');
+  await channel
+    .send({
+      embeds: [
+        embed('danger')
+          .setDescription(fillPlaceholders(text, member, lang))
+          .setThumbnail(member.user.displayAvatarURL())
+          .setFooter({ text: t(lang, 'welcome.footer', { count: member.guild.memberCount }) }),
+      ],
+    })
+    .catch(() => {});
+}
+
+/** Auto-role for new members when the verification gate is off. */
+export async function applyAutoRoles(member) {
+  const settings = getSettings(member.guild.id);
+  const ids = member.user.bot
+    ? [settings.roles.bots]
+    : [settings.roles.autorole, settings.verification.enabled ? null : settings.roles.member];
+  const roles = ids.filter(Boolean).filter((id) => member.guild.roles.cache.has(id));
+  if (roles.length) await member.roles.add(roles, 'Auto role').catch((e) => console.warn('[autorole]', e.message));
+}
