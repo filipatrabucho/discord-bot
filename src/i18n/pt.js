@@ -201,6 +201,8 @@ export default {
       'Olá {user}, bem-vindo ao **{server}**! 🎉\nÉs o membro **#{count}**.\n\nLê as regras, verifica-te e escolhe os teus cargos para começar.',
     defaultMessageVerify:
       'Olá {user}, bem-vindo ao **{server}**! 🎉\nÉs o membro **#{count}**.\n\n👇 Clica em **Aceitar as regras** aqui em baixo para as leres e desbloquear o servidor.',
+    defaultMessageRules:
+      'Olá {user}, bem-vindo ao **{server}**! 🎉\nÉs o membro **#{count}**.\n\n👇 Clica em **Concluído** no fundo do ecrã para leres e aceitares as regras — depois disso o servidor todo fica desbloqueado.',
     defaultGoodbye: '**{username}** saiu do servidor. Agora somos **{count}** membros.',
     footer: 'Membros: {count}',
     invitedBy: 'Convidado por',

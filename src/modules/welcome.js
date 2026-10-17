@@ -32,7 +32,10 @@ export function buildWelcome(member, inviteInfo = null) {
   // New members who still have to accept the rules get the button right on the welcome card.
   const memberRole = settings.verification.enabled && settings.verification.mode === 'button' && guild.roles.cache.get(settings.roles.member);
   const needsVerify = Boolean(memberRole && !member.roles.cache.has(memberRole.id));
-  const text = settings.welcome.message ?? t(lang, needsVerify ? 'welcome.defaultMessageVerify' : 'welcome.defaultMessage');
+  // In 'discord' mode a pending member still has to accept Discord's own rules pop-up.
+  const needsDiscordRules = settings.verification.enabled && settings.verification.mode === 'discord' && member.pending;
+  const defaultKey = needsVerify ? 'welcome.defaultMessageVerify' : needsDiscordRules ? 'welcome.defaultMessageRules' : 'welcome.defaultMessage';
+  const text = settings.welcome.message ?? t(lang, defaultKey);
 
   const e = embed('primary')
     .setAuthor({ name: guild.name, iconURL: guild.iconURL() ?? undefined })

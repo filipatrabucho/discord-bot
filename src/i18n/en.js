@@ -201,6 +201,8 @@ export default {
       'Hey {user}, welcome to **{server}**! 🎉\nYou are member **#{count}**.\n\nRead the rules, verify yourself and pick your roles to get started.',
     defaultMessageVerify:
       'Hey {user}, welcome to **{server}**! 🎉\nYou are member **#{count}**.\n\n👇 Click **Accept the rules** below to read them and unlock the server.',
+    defaultMessageRules:
+      'Hey {user}, welcome to **{server}**! 🎉\nYou are member **#{count}**.\n\n👇 Click **Complete** at the bottom of the screen to read and accept the rules — then the whole server unlocks.',
     defaultGoodbye: '**{username}** left the server. We are now **{count}** members.',
     footer: 'Members: {count}',
     invitedBy: 'Invited by',
